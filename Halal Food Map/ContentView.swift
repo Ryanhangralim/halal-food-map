@@ -57,34 +57,9 @@ struct ContentView: View {
             VStack(alignment: .leading, spacing: 20) {
                 Text("FUTURE CONTENT")
             }
-            .padding()
-            .presentationDetents([.height(800)])
+            .presentationDetents([.fraction(0.99)])
             .presentationDragIndicator(.visible)
             .ignoresSafeArea(edges: .bottom)
-        }
-    }
-}
-
-struct RestaurantSheetView: View {
-    var body: some View {
-        VStack {
-            Capsule()
-                .fill(Color.gray.opacity(0.4))
-                .frame(width: 40, height: 6)
-                .padding(.top)
-
-            Text("Restaurant Details")
-                .font(.title2)
-                .bold()
-                .padding(.top)
-
-            List {
-                Text("🍛 Sate Ayam - 4.3⭐")
-                Text("🍛 Nasi Padang - 4.1⭐")
-                Text("🍔 KFC - 4.2⭐")
-                Text("🥣 Chicken Porridge - 4.5⭐")
-                // Add more dummy data or pull from your `Restaurant` model
-            }
         }
     }
 }
