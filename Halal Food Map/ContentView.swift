@@ -21,7 +21,7 @@ struct ContentView: View {
     )
     
     var body: some View {
-        ZStack(alignment: .bottom){
+        ZStack(alignment: .topTrailing){
             Map(initialPosition: startPosition) {
                 // Custom circle to represent "current location"
                 Annotation("", coordinate: academy) {
@@ -43,8 +43,8 @@ struct ContentView: View {
                     }
                 }
             }
+            .mapControls {}
             .mapStyle(.standard(pointsOfInterest: .including([.restaurant, .cafe])))
-            .ignoresSafeArea()
         }
         .ignoresSafeArea()
         .sheet(isPresented: .constant(true)) {
