@@ -49,7 +49,6 @@ struct RestaurantCardView: View {
                             .foregroundColor(.yellow)
                         Text("\(String(format: "%.1f", restaurant.avgRating)) (\(restaurant.totalReviews))")
                             .font(.subheadline)
-                            .fontWeight(.semibold)
                             .foregroundStyle(.primary)
                     }
                 }
@@ -69,11 +68,11 @@ struct RestaurantCardView: View {
             }
             .padding(15)
             .background(.ultraThinMaterial)
-            .clipShape(RoundedRectangle(cornerRadius: 20))
-            .shadow(radius: 4)
+            .clipShape(RoundedRectangle(cornerRadius: 10))
+            .shadow(radius: 2)
             .frame(width: UIScreen.main.bounds.width - 30) // Set specific width
             .frame(maxHeight: 200) // Set maximum height
-            .padding(.bottom, 10) // Add padding from bottom of screen
+            .padding(.bottom, 5) // Add padding from bottom of screen
         }
 }
 

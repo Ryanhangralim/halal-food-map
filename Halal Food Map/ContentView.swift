@@ -54,7 +54,19 @@ struct ContentView: View {
                         .foregroundColor(.secondary)
                         .offset(y: 10)
                 } else {
-                    Text("FUTURE CONTENT")
+                    NavigationStack {
+                        ScrollView(.vertical){
+                            LazyVStack{
+                                ForEach(Restaurant.dummyData) { restaurant in
+                                    NavigationLink(destination: Text("\(restaurant.name)")){
+                                        RestaurantCardView(restaurant: restaurant)
+                                    }
+                                }
+                                .buttonStyle(.plain)
+                            }
+                        }
+                    }
+                    .padding(.top, 15)
                 }
             }
             .presentationDetents([.height(70), .fraction(0.99)], selection: $selectedDetent)
