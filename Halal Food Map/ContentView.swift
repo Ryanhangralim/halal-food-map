@@ -9,7 +9,7 @@ import MapKit
 import SwiftUI
 
 struct ContentView: View {
-    @State private var showingSheet = false
+    @State private var selectedDetent: PresentationDetent = .height(70)
     
     let academy = CLLocationCoordinate2D(latitude: -8.737300, longitude: 115.175790)
     
@@ -45,21 +45,21 @@ struct ContentView: View {
             }
             .mapStyle(.standard(pointsOfInterest: .including([.restaurant, .cafe])))
             .ignoresSafeArea()
-            
-            // Swipe/tap button that triggers the sheet
-            SwipeButton {
-                showingSheet = true
-            }
         }
         .ignoresSafeArea()
-        .sheet(isPresented: $showingSheet) {
-            // Your sheet content
+        .sheet(isPresented: .constant(true)) {
             VStack(alignment: .leading, spacing: 20) {
-                Text("FUTURE CONTENT")
+                if (selectedDetent == .height(70)){
+                    Text("Swipe to see details")
+                        .foregroundColor(.secondary)
+                        .offset(y: 10)
+                } else {
+                    Text("FUTURE CONTENT")
+                }
             }
-            .presentationDetents([.fraction(0.99)])
-            .presentationDragIndicator(.visible)
-            .ignoresSafeArea(edges: .bottom)
+            .presentationDetents([.height(70), .fraction(0.99)], selection: $selectedDetent)
+            .interactiveDismissDisabled() // disable dismiss
+            .presentationBackgroundInteraction(.enabled(upThrough: .height(70))) // Enable interaction with components when sheet is on bottom
         }
     }
 }
