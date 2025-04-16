@@ -10,6 +10,8 @@ import SwiftUI
 
 struct ContentView: View {
     @State private var selectedDetent: PresentationDetent = .height(70)
+    @State private var selectedRestaurant: Restaurant?
+    @State private var showDetailSheet = false
     
     let academy = CLLocationCoordinate2D(latitude: -8.737300, longitude: 115.175790)
     
@@ -40,11 +42,14 @@ struct ContentView: View {
                 ForEach(Restaurant.dummyData) { restaurant in
                     Annotation(restaurant.name, coordinate: restaurant.coordinate){
                         Pin(rating: restaurant.avgRating)
+                            .onTapGesture {
+                                selectedRestaurant = restaurant
+                            }
                     }
                 }
             }
             .mapControls {}
-            .mapStyle(.standard(pointsOfInterest: .including([.restaurant, .cafe])))
+            .mapStyle(.standard(pointsOfInterest: .excludingAll))
         }
         .ignoresSafeArea()
         .sheet(isPresented: .constant(true)) {
@@ -54,16 +59,16 @@ struct ContentView: View {
                         .foregroundColor(.secondary)
                         .offset(y: 10)
                 } else {
-                    NavigationStack {
-                        ScrollView(.vertical){
-                            LazyVStack{
-                                ForEach(Restaurant.dummyData) { restaurant in
-                                    NavigationLink(destination: Text("\(restaurant.name)")){
-                                        RestaurantCardView(restaurant: restaurant)
-                                    }
+                    ScrollView(.vertical){
+                        LazyVStack{
+                            ForEach(Restaurant.dummyData) { restaurant in
+                                Button {
+                                    selectedRestaurant = restaurant
+                                } label: {
+                                    RestaurantCardView(restaurant: restaurant)
                                 }
-                                .buttonStyle(.plain)
                             }
+                            .buttonStyle(.plain)
                         }
                     }
                     .padding(.top, 15)
@@ -72,6 +77,23 @@ struct ContentView: View {
             .presentationDetents([.height(70), .fraction(0.99)], selection: $selectedDetent)
             .interactiveDismissDisabled() // disable dismiss
             .presentationBackgroundInteraction(.enabled(upThrough: .height(70))) // Enable interaction with components when sheet is on bottom
+            .sheet(item: $selectedRestaurant) { restaurant in
+                NavigationStack {
+                    RestaurantDetailView(restaurant: restaurant)
+                        .toolbar {
+                            ToolbarItem(placement: .navigationBarLeading) {
+                                Button {
+                                    selectedRestaurant = nil
+                                } label: {
+                                    Image(systemName: "chevron.left")
+                                    Text("Back")
+                                }
+                            }
+                        }
+                        .navigationBarTitleDisplayMode(.inline)
+                }
+                .presentationDragIndicator(.hidden)
+            }
         }
     }
 }
