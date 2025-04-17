@@ -13,7 +13,7 @@ struct ReviewCard: View {
     var body: some View {
         VStack(alignment: .leading, spacing: 6) {
             HStack(alignment: .top) {
-                Image("test")
+                Image("profile")
                     .resizable()
                     .frame(width: 40, height: 40)
                     .clipShape(Circle())

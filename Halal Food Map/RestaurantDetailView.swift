@@ -12,6 +12,10 @@ struct RestaurantDetailView: View {
     let restaurant: Restaurant
     let currentLocation: CLLocation
     
+    @State private var isAddingReview = false
+    @State private var reviewText = ""
+    @State private var reviewRating = 3
+    
     var body: some View {
         ScrollView{
             VStack(alignment: .leading, spacing: 0) {
@@ -81,25 +85,32 @@ struct RestaurantDetailView: View {
                 
                 // Rate & Review Section
                 VStack(alignment: .leading, spacing: 12) {
+                    // Header + Add Review Button
                     HStack {
                         Text("Rate & Review")
                             .font(.title3)
                             .fontWeight(.semibold)
-                        
+
                         Spacer()
-                        
+
                         Button(action: {
-                            // Add review logic here
+                            reviewText = ""
+                            reviewRating = 3
+                            
+                            withAnimation {
+                                isAddingReview.toggle()
+                            }
                         }) {
-                            Text("Add Review")
-                            .font(.caption)
-                            .foregroundStyle(.white)
-                            .padding(6)
-                            .background(Color.blue)
-                            .clipShape(RoundedRectangle(cornerRadius: 8))
+                            Text(isAddingReview ? "Cancel" : "Add Review")
+                                .font(.caption)
+                                .foregroundStyle(.white)
+                                .padding(6)
+                                .background(isAddingReview ? Color.red : Color.blue)
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
                         }
                     }
-                    
+
+                    // Rating summary
                     HStack(spacing: 4) {
                         Image(systemName: "star.fill")
                             .foregroundStyle(.yellow)
@@ -107,14 +118,53 @@ struct RestaurantDetailView: View {
                             .bold()
                         Text("(\(restaurant.reviews.count) Reviews)")
                             .foregroundColor(.secondary)
-//                            .font(.caption)
                     }
-                    
-                    ForEach(restaurant.reviews) { review in
-                        ReviewCard(review: review)
-                            .padding()
-                            .background(Color(.systemBackground))
-                            .clipShape(RoundedRectangle(cornerRadius: 12))
+
+                    // If adding, show input fields
+                    if isAddingReview {
+                        VStack(alignment: .leading, spacing: 8) {
+                            Text("Your Review").bold()
+
+                            TextEditor(text: $reviewText)
+                                .frame(height: 80)
+                                .padding(8)
+                                .background(Color(.systemGray6))
+                                .clipShape(RoundedRectangle(cornerRadius: 8))
+
+                            Stepper("Rating: \(reviewRating)", value: $reviewRating, in: 1...5)
+
+                            HStack {
+                                Spacer()
+                                Button(action: {
+                                    let newReview = Review(username: "Anonymous", rating: reviewRating, review: reviewText)
+                                    restaurant.reviews.append(newReview)
+
+                                    reviewText = ""
+                                    reviewRating = 3
+                                    withAnimation {
+                                        isAddingReview = false
+                                    }
+                                }) {
+                                    Text("Add Review")
+                                        .bold()
+                                        .padding(10)
+                                        .background(Color.blue)
+                                        .foregroundStyle(.white)
+                                        .clipShape(RoundedRectangle(cornerRadius: 10))
+                                }
+                                Spacer()
+                            }
+                            .padding(.top, 8)
+                        }
+                        .padding(.vertical)
+                    } else {
+                        // Show existing reviews
+                        ForEach(restaurant.reviews) { review in
+                            ReviewCard(review: review)
+                                .padding()
+                                .background(Color(.systemBackground))
+                                .clipShape(RoundedRectangle(cornerRadius: 12))
+                        }
                     }
                 }
                 .padding(12)
