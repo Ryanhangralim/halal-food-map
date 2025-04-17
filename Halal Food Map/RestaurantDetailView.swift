@@ -125,13 +125,18 @@ struct RestaurantDetailView: View {
                         VStack(alignment: .leading, spacing: 8) {
                             Text("Your Review").bold()
 
+                            HStack{
+                                Spacer()
+                                RatingView(rating: $reviewRating)
+                                Spacer()
+                            }
+                            
                             TextEditor(text: $reviewText)
                                 .frame(height: 80)
                                 .padding(8)
                                 .background(Color(.systemGray6))
                                 .clipShape(RoundedRectangle(cornerRadius: 8))
 
-                            Stepper("Rating: \(reviewRating)", value: $reviewRating, in: 1...5)
 
                             HStack {
                                 Spacer()
