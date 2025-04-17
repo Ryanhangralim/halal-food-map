@@ -5,10 +5,12 @@
 //  Created by Ryan Hangralim on 16/04/25.
 //
 
+import CoreLocation
 import SwiftUI
 
 struct RestaurantDetailView: View {
     let restaurant: Restaurant
+    let currentLocation: CLLocation
     
     var body: some View {
         ScrollView{
@@ -46,7 +48,7 @@ struct RestaurantDetailView: View {
                         .font(.subheadline)
                         .foregroundStyle(.secondary)
                     
-                    Text("\(restaurant.distance)")
+                    Text("\(formattedDistance(from: currentLocation, to: restaurant.location))")
                         .font(.headline)
                         .padding(.bottom, 4)
                 }
@@ -131,7 +133,8 @@ struct RestaurantDetailView_Previews: PreviewProvider {
     static var previews: some View {
         RestaurantDetailView(restaurant: .init(
             name: "Amanaia", category: "Indonesian Restaurant", distance: "60 m", address: "Jl. Kediri, Tuban, Kec. Kuta, Bali, 80361" ,avgRating: 4.5, totalReviews: 2, isCertified: true, latitude: -8.736982293243265, longitude: 115.17502036325229
-        ))
+        ),
+                             currentLocation: CLLocation(latitude: -8.737300, longitude: 115.175790))
         .previewLayout(.sizeThatFits)
     }
 }

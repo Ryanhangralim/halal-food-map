@@ -5,6 +5,7 @@
 //  Created by Ryan Hangralim on 15/04/25.
 //
 
+import CoreLocation
 import MapKit
 import SwiftUI
 
@@ -14,6 +15,7 @@ struct ContentView: View {
     @State private var showDetailSheet = false
     
     let academy = CLLocationCoordinate2D(latitude: -8.737300, longitude: 115.175790)
+    let academyLocation = CLLocation(latitude: -8.737300, longitude: 115.175790)
     
     let startPosition = MapCameraPosition.region(
         MKCoordinateRegion(
@@ -21,6 +23,14 @@ struct ContentView: View {
             span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
         )
     )
+    
+    var sortedRestaurants: [Restaurant] {
+        return Restaurant.dummyData.sorted {
+            let location1 = CLLocation(latitude: $0.latitude, longitude: $0.longitude)
+            let location2 = CLLocation(latitude: $1.latitude, longitude: $1.longitude)
+            return location1.distance(from: academyLocation) < location2.distance(from: academyLocation)
+        }
+    }
     
     var body: some View {
         ZStack(alignment: .topTrailing){
@@ -61,11 +71,11 @@ struct ContentView: View {
                 } else {
                     ScrollView(.vertical){
                         LazyVStack{
-                            ForEach(Restaurant.dummyData) { restaurant in
+                            ForEach(sortedRestaurants) { restaurant in
                                 Button {
                                     selectedRestaurant = restaurant
                                 } label: {
-                                    RestaurantCardView(restaurant: restaurant)
+                                    RestaurantCardView(restaurant: restaurant, currentLocation: academyLocation)
                                 }
                             }
                             .buttonStyle(.plain)
@@ -79,7 +89,7 @@ struct ContentView: View {
             .presentationBackgroundInteraction(.enabled(upThrough: .height(70))) // Enable interaction with components when sheet is on bottom
             .sheet(item: $selectedRestaurant) { restaurant in
                 NavigationStack {
-                    RestaurantDetailView(restaurant: restaurant)
+                    RestaurantDetailView(restaurant: restaurant, currentLocation: academyLocation)
                         .toolbar {
                             ToolbarItem(placement: .navigationBarLeading) {
                                 Button {
