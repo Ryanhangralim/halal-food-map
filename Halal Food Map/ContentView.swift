@@ -7,9 +7,14 @@
 
 import CoreLocation
 import MapKit
+import SwiftData
 import SwiftUI
 
 struct ContentView: View {
+    @Environment(\.modelContext) var modelContext
+    @Query var restaurants: [Restaurant]
+    @State private var viewModel: RestaurantViewModel?
+    
     @State private var selectedDetent: PresentationDetent = .height(70)
     @State private var selectedRestaurant: Restaurant?
     @State private var showDetailSheet = false
@@ -51,7 +56,7 @@ struct ContentView: View {
                 // Other restaurant pins (dummy data)
                 ForEach(Restaurant.dummyData) { restaurant in
                     Annotation(restaurant.name, coordinate: restaurant.coordinate){
-                        Pin(rating: restaurant.avgRating)
+                        Pin(rating: restaurant.averageRating)
                             .onTapGesture {
                                 selectedRestaurant = restaurant
                             }
@@ -105,10 +110,17 @@ struct ContentView: View {
                 .presentationDragIndicator(.hidden)
             }
         }
+        .onAppear { // Dummy data insert
+            if viewModel == nil {
+                viewModel = RestaurantViewModel(modelContext: modelContext)
+            }
+        }
     }
+
 }
 
 
 #Preview {
     ContentView()
+        .modelContainer(for: [Restaurant.self, Review.self], inMemory: true)
 }

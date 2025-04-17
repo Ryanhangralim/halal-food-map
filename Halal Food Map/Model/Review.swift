@@ -24,15 +24,3 @@ class Review: Identifiable {
         self.review = review
     }
 }
-
-extension Review {
-    static let dummyData: [Review] = [
-        Review(username: "Capybara", rating: 5, review: "This place is fire bro"),
-        Review(username: "Red Panda", rating: 5, review: "What he said"),
-        Review(username: "Test", rating: 4, review: "test test test testset test testst steset sejts telsjtlsj lejlej kjeljlkjelj ejlkjelksj kljeljl kjeeese"),
-        Review(username: "Test", rating: 4, review: "test test test testset test testst steset sejts telsjtlsj lejlej kjeljlkjelj ejlkjelksj kljeljl kjeeese"),
-        Review(username: "Test", rating: 4, review: "test test test testset test testst steset sejts telsjtlsj lejlej kjeljlkjelj ejlkjelksj kljeljl kjeeese"),
-        Review(username: "Test", rating: 4, review: "test test test testset test testst steset sejts telsjtlsj lejlej kjeljlkjelj ejlkjelksj kljeljl kjeeese"),
-        Review(username: "Test", rating: 4, review: "test test test testset test testst steset sejts telsjtlsj lejlej kjeljlkjelj ejlkjelksj kljeljl kjeeese")
-    ]
-}

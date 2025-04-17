@@ -28,6 +28,13 @@ class Restaurant: Identifiable {
         CLLocation(latitude: latitude, longitude: longitude)
     }
     
+    // Compute average rating
+    var averageRating: Double {
+        guard !reviews.isEmpty else { return 0.0 }
+        let totalRating = reviews.reduce(0) { $0 + $1.rating }
+        return Double(totalRating) / Double(reviews.count)
+    }
+    
     init(id: UUID = UUID(), name: String, category: String, address: String, isCertified: Bool, latitude: Double, longitude: Double, reviews: [Review]) {
         self.id = id
         self.name = name
@@ -51,7 +58,10 @@ extension Restaurant {
             longitude: 115.17502036325229,
             reviews: [
                 Review(username: "Ali", rating: 5, uploadedAt: .randomLast30Days, review: "Authentic and delicious!"),
-                Review(username: "Dewi", rating: 4, uploadedAt: .randomLast30Days, review: "Nice place, friendly staff.")
+                Review(username: "Dewi", rating: 4, uploadedAt: .randomLast30Days, review: "Nice place, friendly staff."),
+                Review(username: "Dewi2", rating: 4, uploadedAt: .randomLast30Days, review: "Nice place, friendly staff.Nice place, friendly staff.Nice place, friendly staff.Nice place, friendly staff."),
+                Review(username: "Dewi3", rating: 4, uploadedAt: .randomLast30Days, review: "Nice place, friendly staff.Nice place, friendly staff.Nice place, friendly staff.Nice place, friendly staff."),
+                Review(username: "Dewi4", rating: 4, uploadedAt: .randomLast30Days, review: "Nice place, friendly staff.Nice place, friendly staff.Nice place, friendly staff.Nice place, friendly staff.Nice place, friendly staff.Nice place, friendly staff.Nice place, friendly staff.Nice place, friendly staff.Nice place, friendly staff.")
             ]
         ),
         Restaurant(

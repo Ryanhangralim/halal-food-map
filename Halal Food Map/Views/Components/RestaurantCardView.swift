@@ -49,7 +49,7 @@ struct RestaurantCardView: View {
                 HStack(spacing: 4) {
                     Image(systemName: "star.fill")
                         .foregroundColor(.yellow)
-                    Text("\(String(format: "%.1f", restaurant.avgRating)) (\(restaurant.totalReviews))")
+                    Text("\(String(format: "%.1f", restaurant.averageRating)) (\(restaurant.reviews.count))")
                         .font(.subheadline)
                         .foregroundStyle(.primary)
                 }
@@ -81,7 +81,16 @@ struct RestaurantCardView: View {
 struct RestaurantCardView_Previews: PreviewProvider {
     static var previews: some View {
         RestaurantCardView(restaurant: .init(
-            name: "Amanaia", category: "Indonesian Restaurant", distance: "60 m", address: "Jl. Kediri, Tuban, Kec. Kuta, Bali, 80361" ,avgRating: 4.5, totalReviews: 2, isCertified: true, latitude: -8.736982293243265, longitude: 115.17502036325229
+                name: "Amanaia",
+                category: "Indonesian Restaurant",
+                address: "Jl. Kediri, Tuban, Kec. Kuta, Bali, 80361",
+                isCertified: true,
+                latitude: -8.736982293243265,
+                longitude: 115.17502036325229,
+                reviews: [
+                    Review(username: "Ali", rating: 5, uploadedAt: .randomLast30Days, review: "Authentic and delicious!"),
+                    Review(username: "Dewi", rating: 4, uploadedAt: .randomLast30Days, review: "Nice place, friendly staff.")
+                ]
         ),
        currentLocation: CLLocation(latitude: -8.737300, longitude: 115.175790))
         .previewLayout(.sizeThatFits)
