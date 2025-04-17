@@ -6,13 +6,23 @@
 //
 
 import Foundation
+import SwiftData
 
-struct Review: Identifiable {
+@Model
+class Review: Identifiable {
     var id = UUID()
     var username: String
     var rating: Int
-    var uploadedAt: Date = .now
+    var uploadedAt: Date = Date()
     var review: String
+    
+    init(id: UUID = UUID(), username: String, rating: Int, uploadedAt: Date = Date(), review: String) {
+        self.id = id
+        self.username = username
+        self.rating = rating
+        self.uploadedAt = uploadedAt
+        self.review = review
+    }
 }
 
 extension Review {
