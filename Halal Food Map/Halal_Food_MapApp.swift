@@ -13,6 +13,6 @@ struct Halal_Food_MapApp: App {
     var body: some Scene {
         WindowGroup {
             ContentView()
-        }.modelContainer(for: Restaurant.self)
+        }.modelContainer(for: [Restaurant.self, Review.self])
     }
 }

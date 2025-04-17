@@ -18,6 +18,8 @@ class Restaurant: Identifiable {
     var isCertified: Bool
     var latitude: Double
     var longitude: Double
+    
+    @Relationship(deleteRule: .cascade)
     var reviews: [Review]
     
     var coordinate: CLLocationCoordinate2D {

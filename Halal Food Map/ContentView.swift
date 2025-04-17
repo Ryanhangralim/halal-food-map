@@ -30,7 +30,7 @@ struct ContentView: View {
     )
     
     var sortedRestaurants: [Restaurant] {
-        return Restaurant.dummyData.sorted {
+        return restaurants.sorted {
             let location1 = CLLocation(latitude: $0.latitude, longitude: $0.longitude)
             let location2 = CLLocation(latitude: $1.latitude, longitude: $1.longitude)
             return location1.distance(from: academyLocation) < location2.distance(from: academyLocation)
@@ -54,7 +54,7 @@ struct ContentView: View {
                 }
                 
                 // Other restaurant pins (dummy data)
-                ForEach(Restaurant.dummyData) { restaurant in
+                ForEach(restaurants) { restaurant in
                     Annotation(restaurant.name, coordinate: restaurant.coordinate){
                         Pin(rating: restaurant.averageRating)
                             .onTapGesture {
@@ -110,7 +110,7 @@ struct ContentView: View {
                 .presentationDragIndicator(.hidden)
             }
         }
-        .onAppear { // Dummy data insert
+        .task { // Dummy data insert
             if viewModel == nil {
                 viewModel = RestaurantViewModel(modelContext: modelContext)
             }

@@ -6,9 +6,11 @@
 //
 
 import CoreLocation
+import SwiftData
 import SwiftUI
 
 struct RestaurantDetailView: View {
+    @Environment(\.modelContext) private var modelContext
     let restaurant: Restaurant
     let currentLocation: CLLocation
     
@@ -141,7 +143,10 @@ struct RestaurantDetailView: View {
                             HStack {
                                 Spacer()
                                 Button(action: {
-                                    let newReview = Review(username: "Anonymous", rating: reviewRating, review: reviewText)
+                                    // Create the new review
+                                    let newReview = Review(username: "Anonymous", rating: reviewRating, uploadedAt: Date(), review: reviewText)
+                                    
+                                    // Associate the review with the restaurant and insert it into SwiftData
                                     restaurant.reviews.append(newReview)
 
                                     reviewText = ""
