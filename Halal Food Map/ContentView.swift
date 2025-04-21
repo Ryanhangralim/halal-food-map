@@ -19,21 +19,27 @@ struct ContentView: View {
     @State private var selectedRestaurant: Restaurant?
     @State private var showDetailSheet = false
     
-    let academy = CLLocationCoordinate2D(latitude: -8.737300, longitude: 115.175790)
-    let academyLocation = CLLocation(latitude: -8.737300, longitude: 115.175790)
-    
-    let startPosition = MapCameraPosition.region(
-        MKCoordinateRegion(
-            center: CLLocationCoordinate2D(latitude: -8.737300, longitude: 115.175790),
-            span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
-        )
+    // Add the location fetcher as a StateObject
+    @StateObject private var locationFetcher = LocationFetcher()
+
+    // Default to academy location but will update with user location
+    @State private var currentCoordinate = CLLocationCoordinate2D(latitude: -8.737300, longitude: 115.175790)
+    @State private var currentLocation = CLLocation(latitude: -8.737300, longitude: 115.175790)
+
+    @State private var mapRegion = MKCoordinateRegion(
+        center: CLLocationCoordinate2D(latitude: -8.737300, longitude: 115.175790),
+        span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
     )
+
+    var startPosition: MapCameraPosition {
+        return .region(mapRegion)
+    }
     
     var sortedRestaurants: [Restaurant] {
         return restaurants.sorted {
             let location1 = CLLocation(latitude: $0.latitude, longitude: $0.longitude)
             let location2 = CLLocation(latitude: $1.latitude, longitude: $1.longitude)
-            return location1.distance(from: academyLocation) < location2.distance(from: academyLocation)
+            return location1.distance(from: currentLocation) < location2.distance(from: currentLocation)
         }
     }
     
@@ -41,7 +47,7 @@ struct ContentView: View {
         ZStack(alignment: .topTrailing){
             Map(initialPosition: startPosition) {
                 // Custom circle to represent "current location"
-                Annotation("", coordinate: academy) {
+                Annotation("You", coordinate: currentCoordinate) {
                     Circle()
                         .fill(Color.blue)
                         .frame(width: 20, height: 20)
@@ -80,7 +86,7 @@ struct ContentView: View {
                                 Button {
                                     selectedRestaurant = restaurant
                                 } label: {
-                                    RestaurantCardView(restaurant: restaurant, currentLocation: academyLocation)
+                                    RestaurantCardView(restaurant: restaurant, currentLocation: currentLocation)
                                 }
                             }
                             .buttonStyle(.plain)
@@ -94,7 +100,7 @@ struct ContentView: View {
             .presentationBackgroundInteraction(.enabled(upThrough: .height(70))) // Enable interaction with components when sheet is on bottom
             .sheet(item: $selectedRestaurant) { restaurant in
                 NavigationStack {
-                    RestaurantDetailView(restaurant: restaurant, currentLocation: academyLocation)
+                    RestaurantDetailView(restaurant: restaurant, currentLocation: currentLocation)
                         .toolbar {
                             ToolbarItem(placement: .navigationBarLeading) {
                                 Button {
@@ -110,10 +116,26 @@ struct ContentView: View {
                 .presentationDragIndicator(.hidden)
             }
         }
-        .task { // Dummy data insert
+        .onAppear {
             if viewModel == nil {
                 viewModel = RestaurantViewModel(modelContext: modelContext)
             }
+            
+            // Set up the callback before starting location updates
+            locationFetcher.onLocationUpdate = { userLocation in
+                // Update current location
+                currentCoordinate = userLocation
+                currentLocation = CLLocation(latitude: userLocation.latitude, longitude: userLocation.longitude)
+                
+                // Update map region to center on user
+                mapRegion = MKCoordinateRegion(
+                    center: userLocation,
+                    span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
+                )
+            }
+            
+            // Start the location fetcher
+            locationFetcher.start()
         }
     }
 

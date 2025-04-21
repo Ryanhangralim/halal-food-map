@@ -21,9 +21,20 @@ func formattedDistance(from location1: CLLocation, to location2: CLLocation) -> 
 }
 
 // Fetch user location
-class LocationFetcher: NSObject, CLLocationManagerDelegate {
+class LocationFetcher: NSObject, CLLocationManagerDelegate, ObservableObject {
     let manager = CLLocationManager()
-    var lastKnownLocation: CLLocationCoordinate2D?
+    
+    @Published var lastKnownLocation: CLLocationCoordinate2D? {
+        didSet {
+            // This will fire whenever the location changes
+            if let location = lastKnownLocation {
+                onLocationUpdate?(location)
+            }
+        }
+    }
+    
+    // Add a callback closure property
+    var onLocationUpdate: ((CLLocationCoordinate2D) -> Void)?
 
     override init() {
         super.init()
