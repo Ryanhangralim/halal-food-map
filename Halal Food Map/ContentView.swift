@@ -18,6 +18,7 @@ struct ContentView: View {
     @State private var selectedDetent: PresentationDetent = .height(70)
     @State private var selectedRestaurant: Restaurant?
     @State private var showDetailSheet = false
+    @State private var showAddRestaurantSheet = false
     
     // Add the location fetcher as a StateObject
     @StateObject private var locationFetcher = LocationFetcher()
@@ -44,7 +45,7 @@ struct ContentView: View {
     }
     
     var body: some View {
-        ZStack(alignment: .topTrailing){
+        ZStack(alignment: .bottomTrailing){
             Map(initialPosition: startPosition) {
                 // Custom circle to represent "current location"
                 Annotation("You", coordinate: currentCoordinate) {
@@ -71,6 +72,23 @@ struct ContentView: View {
             }
             .mapControls {}
             .mapStyle(.standard(pointsOfInterest: .excludingAll))
+            
+            // Add button
+            Button(action: {
+                showAddRestaurantSheet = true
+            }) {
+                Circle()
+                    .fill(Color.green)
+                    .frame(width: 56, height: 56)
+                    .overlay(
+                        Image(systemName: "plus")
+                            .font(.system(size: 24, weight: .bold))
+                            .foregroundColor(.white)
+                    )
+                    .shadow(radius: 4)
+                    .padding(24)
+            }
+            .offset(y: -90)
         }
         .ignoresSafeArea()
         .sheet(isPresented: .constant(true)) {
@@ -114,6 +132,9 @@ struct ContentView: View {
                         .navigationBarTitleDisplayMode(.inline)
                 }
                 .presentationDragIndicator(.hidden)
+            }
+            .sheet(isPresented: $showAddRestaurantSheet){
+                AddRestaurantView()
             }
         }
         .onAppear {
