@@ -134,7 +134,7 @@ struct ContentView: View {
                 .presentationDragIndicator(.hidden)
             }
             .sheet(isPresented: $showAddRestaurantSheet){
-                AddRestaurantView()
+                AddRestaurantView(currentLocation: currentLocation)
             }
         }
         .onAppear {

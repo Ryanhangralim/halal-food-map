@@ -8,11 +8,19 @@
 import SwiftUI
 import MapKit
 
+struct SearchResult: Identifiable, Hashable {
+    let id = UUID()
+    let mapItem: MKMapItem
+    let distance: CLLocationDistance
+}
+
 struct AddRestaurantView: View {
     @Environment(\.dismiss) private var dismiss
     
     @State private var searchText = ""
-    @State private var searchResults: [MKMapItem] = []
+    @State private var searchResults: [SearchResult] = []
+    
+    @State var currentLocation: CLLocation?
 
     var body: some View {
         NavigationStack {
@@ -26,7 +34,8 @@ struct AddRestaurantView: View {
                     }
                 
                 // Search results with built-in navigation
-                List(searchResults, id: \.self) { item in
+                List(searchResults, id: \.id) { result in
+                    let item = result.mapItem
                     NavigationLink(destination: RestaurantFormView(
                         name: item.name ?? "",
                         address: item.placemark.title ?? "",
@@ -42,6 +51,10 @@ struct AddRestaurantView: View {
                             Text(item.placemark.title ?? "")
                                 .font(.subheadline)
                                 .foregroundColor(.secondary)
+                            let distanceInKm = result.distance / 1000.0
+                            Text(String(format: "%.2f km away", distanceInKm))
+                                .font(.caption)
+                                .foregroundColor(.gray)
                         }
                     }
                 }
@@ -56,9 +69,19 @@ struct AddRestaurantView: View {
 
         let search = MKLocalSearch(request: request)
         search.start { response, error in
-            if let response = response {
-                searchResults = response.mapItems
+            guard let response = response, let userLocation = currentLocation else { return }
+
+            let resultsWithDistance = response.mapItems.map { item in
+                let itemLocation = CLLocation(
+                    latitude: item.placemark.coordinate.latitude,
+                    longitude: item.placemark.coordinate.longitude
+                )
+                let distance = userLocation.distance(from: itemLocation)
+                return SearchResult(mapItem: item, distance: distance)
             }
+            .sorted { $0.distance < $1.distance } // Sort by distance ascending
+
+            searchResults = resultsWithDistance
         }
     }
 }
