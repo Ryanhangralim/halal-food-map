@@ -4,7 +4,6 @@
 //
 //  Created by Ryan Hangralim on 15/04/25.
 //
-
 import CoreLocation
 import MapKit
 import SwiftData
@@ -23,19 +22,16 @@ struct ContentView: View {
     // Add the location fetcher as a StateObject
     @StateObject private var locationFetcher = LocationFetcher()
 
-    // Default to academy location but will update with user location
+    // Default location to use until we get user location
     @State private var currentCoordinate = CLLocationCoordinate2D(latitude: -8.737300, longitude: 115.175790)
     @State private var currentLocation = CLLocation(latitude: -8.737300, longitude: 115.175790)
-
-    @State private var mapRegion = MKCoordinateRegion(
-        center: CLLocationCoordinate2D(latitude: -8.737300, longitude: 115.175790),
-        span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
-    )
-
-    var startPosition: MapCameraPosition {
-        return .region(mapRegion)
-    }
     
+    // Camera position state that we can update
+    @State private var cameraPosition: MapCameraPosition = .automatic
+    
+    // Flag to track if initial position has been set
+    @State private var initialPositionSet = false
+
     var sortedRestaurants: [Restaurant] {
         return restaurants.sorted {
             let location1 = CLLocation(latitude: $0.latitude, longitude: $0.longitude)
@@ -46,7 +42,18 @@ struct ContentView: View {
     
     var body: some View {
         ZStack(alignment: .bottomTrailing){
-            Map(initialPosition: startPosition) {
+            Map(position: $cameraPosition) {
+                
+                // Other restaurant pins
+                ForEach(restaurants) { restaurant in
+                    Annotation(restaurant.name, coordinate: restaurant.coordinate){
+                        Pin(rating: restaurant.averageRating)
+                            .onTapGesture {
+                                selectedRestaurant = restaurant
+                            }
+                    }
+                }
+                
                 // Custom circle to represent "current location"
                 Annotation("You", coordinate: currentCoordinate) {
                     Circle()
@@ -58,16 +65,6 @@ struct ContentView: View {
                                 .frame(width: 20, height: 20)
                         )
                         .shadow(radius: 4)
-                }
-                
-                // Other restaurant pins (dummy data)
-                ForEach(restaurants) { restaurant in
-                    Annotation(restaurant.name, coordinate: restaurant.coordinate){
-                        Pin(rating: restaurant.averageRating)
-                            .onTapGesture {
-                                selectedRestaurant = restaurant
-                            }
-                    }
                 }
             }
             .mapControls {}
@@ -148,18 +145,23 @@ struct ContentView: View {
                 currentCoordinate = userLocation
                 currentLocation = CLLocation(latitude: userLocation.latitude, longitude: userLocation.longitude)
                 
-                // Update map region to center on user
-                mapRegion = MKCoordinateRegion(
-                    center: userLocation,
-                    span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
-                )
+                // Update camera position to center on user location
+                // Only center automatically on first location update
+                if !initialPositionSet {
+                    cameraPosition = .region(
+                        MKCoordinateRegion(
+                            center: userLocation,
+                            span: MKCoordinateSpan(latitudeDelta: 0.005, longitudeDelta: 0.005)
+                        )
+                    )
+                    initialPositionSet = true
+                }
             }
             
             // Start the location fetcher
             locationFetcher.start()
         }
     }
-
 }
 
 
